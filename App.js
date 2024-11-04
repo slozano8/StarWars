@@ -1,10 +1,11 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import { Routes } from './Routes';
+import { AppRouter } from './AppRouter';
 
 export default function App() {
   return (
-    <Routes/>
+    <AppRouter/>
   );
 }
 
