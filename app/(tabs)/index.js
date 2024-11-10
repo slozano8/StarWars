@@ -1,6 +1,9 @@
 import { Image, StyleSheet, Platform } from 'react-native';
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { FlatList, Text, View } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
+
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -21,6 +24,38 @@ export default function HomeScreen() {
     </ParallaxScrollView>
   );
 }
+
+const fetchPlanets = async () => {
+  const response = await axios.get('https://swapi.dev/api/planets/');
+  const data = await response.data;
+  return data.results;
+};
+
+const PlanetScreen = () => {
+  const [planets, setPlanets] = useState([]);
+
+  useEffect(() => {
+    const fetchPlanetsData = async () => {
+      const fetchedPlanets = await fetchPlanets();
+      setPlanets(fetchedPlanets);
+    };
+
+    fetchPlanetsData();
+  }, []);
+
+  return (
+    <FlatList
+      data={planets}
+      renderItem={({ item }) => (
+        <View>
+          <Text>{item.name}</Text>
+          {/* Add more details as needed */}
+        </View>
+      )}
+      keyExtractor={(item) => item.url}
+    />
+  );
+};
 
 const styles = StyleSheet.create({
   titleContainer: {
