@@ -1,68 +1,72 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, Text, View, Image, StyleSheet } from 'react-native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function FilmsScreen() { 
+const FilmsScreen = () => {
   const [films, setFilms] = useState([]);
+  const navigation = useNavigation();
+
+
 
   useEffect(() => {
-    const fetchFilmsData = async () => {
-      const response = await axios.get('https://swapi.dev/api/films/'); 
-      const data = await response.data; 
-      setFilms(data);
-    };
+      const fetchFilms = async () => {
+          const response = await axios.get('https://swapi.dev/api/films/');
+          setFilms(response.data.results);
+      };
 
-    fetchFilmsData();
+      fetchFilms();
   }, []);
 
+  const handleFilmPress = (film) => {
+      navigation.navigate('films', { film });
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/planets.png')}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Films</ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <FlatList
+      data={films}
+      renderItem={({ item }) => (
+        <View style={styles.listItem}>
+          <View style={styles.listItemContent}>
+            <Text style={styles.listItemTitle}>{item.title}</Text>
+            <Text style={styles.listEpisodeId}>{item.episode_id}</Text>
+            <Text style={styles.listOpening}>{item.opening_crawl}</Text>
+            <Text style={styles.listDirector}>{item.director}</Text>
+            <Text style={styles.listProducer}>{item.producer}</Text>
+            <Text style={styles.listRelease}>{item.release_date}</Text>
+          </View>
+        </View>
+      )}
+      keyExtractor={(item) => item.url}
+      style={styles.list}
+    />
   );
-}
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  list: {
+    padding: 10,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  listItem: {
+    marginBottom: 10,
+    backgroundColor: '#A1CEDC',
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation:   
+ 5,
   },
-  reactLogo: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
-    alignItems: 'center',
+  listItemTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    paddingTop: 40,
-  },
-  item: {
-    margin: 5,
-    padding: 5,
-    color: "slategrey",
-    backgroundColor: "ghostwhite",
-    textAlign: "center",
+  listItemDescription: {
+    fontSize: 14,
   },
 });
+
+export default FilmsScreen;

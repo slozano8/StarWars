@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet,} from 'react-native';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { FlatList, Text, View } from 'react-native';
@@ -15,7 +15,7 @@ export default function HomeScreen() {
       headerImage={
         <Image
           source={require('@/assets/images/planets.png')}
-          style={styles.reactLogo}
+          style={styles.space}
         />
       }>
       <ThemedView style={styles.titleContainer}>
@@ -26,7 +26,7 @@ export default function HomeScreen() {
 }
 
 const fetchPlanets = async () => {
-  const response = await axios.get('https://swapi.dev/api/planets/');
+  const response = await axios.get('https://swapi.dev/api/planets/1');
   const data = await response.data;
   return data.results;
 };
@@ -57,6 +57,8 @@ const PlanetScreen = () => {
   );
 };
 
+
+
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
@@ -67,10 +69,9 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
-  reactLogo: {
-    flex: 1,
-    resizeMode: 'cover', 
-    justifyContent: 'center',
-    alignItems: 'center',
+  space: {
+    width: 200,
+    height: 200,
+    resizeMode: 'cover',
   },
 });
