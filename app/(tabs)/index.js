@@ -14,48 +14,16 @@ export default function HomeScreen() {
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
         <Image
-          source={require('@/assets/images/planets.png')}
+          source={require('@/assets/images/starwars.png')}
           style={styles.space}
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Planets</ThemedText>
+        <ThemedText type="title">Star Wars APP</ThemedText>
        </ThemedView>
     </ParallaxScrollView>
   );
 }
-
-const fetchPlanets = async () => {
-  const response = await axios.get('https://swapi.dev/api/planets/1');
-  const data = await response.data;
-  return data.results;
-};
-
-const PlanetScreen = () => {
-  const [planets, setPlanets] = useState([]);
-
-  useEffect(() => {
-    const fetchPlanetsData = async () => {
-      const fetchedPlanets = await fetchPlanets();
-      setPlanets(fetchedPlanets);
-    };
-
-    fetchPlanetsData();
-  }, []);
-
-  return (
-    <FlatList
-      data={planets}
-      renderItem={({ item }) => (
-        <View>
-          <Text>{item.name}</Text>
-          {/* Add more details as needed */}
-        </View>
-      )}
-      keyExtractor={(item) => item.url}
-    />
-  );
-};
 
 
 

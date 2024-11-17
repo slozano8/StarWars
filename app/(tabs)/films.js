@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, Text, View, Image, StyleSheet } from 'react-native';
+import { FlatList, Text, View, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 
@@ -21,6 +21,7 @@ const FilmsScreen = () => {
   const handleFilmPress = (film) => {
       navigation.navigate('films', { film });
   };
+
 
   return (
     <FlatList
