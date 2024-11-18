@@ -1,41 +1,47 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { Image, StyleSheet, TextInput, View } from 'react-native';
+import axios from 'axios';
 
-import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
+  const [searchText, setSearchText] = useState('');
+
+  const handleSearch = (text) => {
+    // Implement your search logic here, e.g., filtering data, making API calls
+    console.log('Search query:', text);
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/planets.png')}
-          style={styles.reactLogo}
-        />
-      }>
+      headerImage={<Image source={require('@/assets/images/starwars.png')} resizeMode="cover" />}
+    >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Planets</ThemedText>
-       </ThemedView>
+        <ThemedText type="title">Star Wars APP</ThemedText>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search"
+          onChangeText={handleSearch}
+          value={searchText}
+        />
+      </ThemedView>
+      {/* ... rest of your content */}
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
+  // ... other styles
+  searchBar: {
     flex: 1,
-    resizeMode: 'cover', 
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 10, 
+    padding: 10,
+    backgroundColor: '#f2f2f2', 
+    color: '#333', // Text color
   },
 });

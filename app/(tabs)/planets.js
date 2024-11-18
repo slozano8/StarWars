@@ -1,32 +1,31 @@
-
 import React, { useState, useEffect } from 'react';
 import { FlatList, Text, View, StyleSheet } from 'react-native';
 import axios from 'axios';
 
-const Spaceships = () => {
-  const [spaceships, setSpaceships] = useState([]);
+const Planets = () => {
+  const [Planets, setPlanets] = useState([]);
 
   useEffect(() => {
-    const fetchSpaceships = async () => {
-      const response = await axios.get('https://swapi.dev/api/starships/');
-      setSpaceships(response.data.results);
+    const fetchPlanets = async () => {
+      const response = await axios.get('https://swapi.dev/api/planets/');
+      setPlanets(response.data.results);
     };
 
-    fetchSpaceships();
+    fetchPlanets();
   }, []);
 
   return (
       <FlatList
-        data={spaceships}
+        data={Planets}
         renderItem={({ item }) => (
           <View style={styles.listItem}>
             <View style={styles.listItemContent}>
               <Text style={styles.ItemName}>{item.name}</Text>
-              <Text style={styles.ItemModel}>{item.model}</Text>
-              <Text style={styles.ItemClass}>{item.starship_class}</Text>
-              <Text style={styles.ItemManufacturer}>{item.manufacturer}</Text>
-              <Text style={styles.ItemCrew}>{item.crew}</Text>
-              <Text style={styles.ItemPassengers}>{item.passengers}</Text>
+              <Text style={styles.ItemDiameter}>{item.diameter}</Text>
+              <Text style={styles.ItemRotation}>{item.rotation_period}</Text>
+              <Text style={styles.ItemOrbital}>{item.orbital_period}</Text>
+              <Text style={styles.ItemGravity}>{item.gravity}</Text>
+              <Text style={styles.ItemPopulation}>{item.population}</Text>
             </View>
           </View>
         )}
@@ -68,4 +67,4 @@ const Spaceships = () => {
     },
   });
 
-  export default Spaceships;
+  export default Planets;
