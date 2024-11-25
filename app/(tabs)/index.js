@@ -1,47 +1,116 @@
-import React, { useState } from 'react';
-import { Image, StyleSheet, TextInput, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { FlatList, Text, View, StyleSheet, Image, TextInput } from 'react-native';
 import axios from 'axios';
+import { ScrollView } from 'react-native-gesture-handler';
 
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
+const HomeScreen = () => {
   const [searchText, setSearchText] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (text) => {
-    // Implement your search logic here, e.g., filtering data, making API calls
-    console.log('Search query:', text);
+    setSearchText(text);
+    // Implement search logic here, e.g., filtering data
+    // ...
   };
 
+  useEffect(() => {
+    // Fetch data from the API
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://swapi.dev/api/people/');
+        setFilteredData(response.data.results);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={<Image source={require('@/assets/images/starwars.png')} resizeMode="cover" />}
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Star Wars APP</ThemedText>
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search"
-          onChangeText={handleSearch}
-          value={searchText}
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={require('@/assets/images/starwars.png')} 
+          style={styles.bannerImage}
+          resizeMode="cover"
         />
-      </ThemedView>
-      {/* ... rest of your content */}
-    </ParallaxScrollView>
+      </View>
+
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>STARWARS APP by Santos</Text>
+      </View>
+
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search Website"
+        onChangeText={handleSearch}
+        value={searchText}
+        clearButtonMode="while-editing"
+      />
+
+      <FlatList
+      
+        data={filteredData}
+        renderItem={({ item }) => (
+          <View style={styles.listItem}>
+            <Text style={styles.listItemTitle}>{item.name}</Text>
+            {/* Add more details as needed */}
+          </View>
+        )}
+        keyExtractor={(item) => item.url}
+        style={styles.list}
+      />
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  // ... other styles
-  searchBar: {
+  container: {
     flex: 1,
-    borderWidth: 1,
+  },
+  imageContainer: {
+    width: '100%',
+    height: 200,
+  },
+  bannerImage: {
+    width: '100%',
+    height: '100%',
+  },
+  searchBar: {
+    borderWidth: 3,
     borderColor: 'gray',
-    borderRadius: 10, 
+    borderRadius: 10,
     padding: 10,
-    backgroundColor: '#f2f2f2', 
-    color: '#333', // Text color
+    margin: 10,
+  },
+  list: {
+    padding: 10,
+  },
+  listItem: {
+    marginBottom: 10,
+    backgroundColor: '#A1CEDC',
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  listItemTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  titleText: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
+
+export default HomeScreen;
