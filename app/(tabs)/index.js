@@ -1,37 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { FlatList, Text, View, StyleSheet, Image, TextInput } from 'react-native';
-import axios from 'axios';
-import { ScrollView } from 'react-native-gesture-handler';
 
-const HomeScreen = () => {
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, TextInput, Button, FlatList, Text, Image } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+} from 'react-native-reanimated';
+import axios from 'axios';
+
+export default function App({ width }) {
+  const offset = useSharedValue(width / 2 - 160);
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateX: offset.value }],
+  }));
+
+  React.useEffect(() => {
+    offset.value = withRepeat(
+      withTiming(-offset.value, { duration: 2000 }),
+      -1,
+      true
+    );
+  }, []);
+
   const [searchText, setSearchText] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const [data, setData] = useState([]);
 
-  const handleSearch = (text) => {
-    setSearchText(text);
-    // Implement search logic here, e.g., filtering data
-    // ...
+  const fetchData = async (query) => {
+    try {
+      const response = await axios.get(`https://swapi.dev/api/${query}/`);
+      setData(response.data.results);
+      setFilteredData(response.data.results);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
 
-  useEffect(() => {
-    // Fetch data from the API
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://swapi.dev/api/people/');
-        setFilteredData(response.data.results);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+  const handleSearch = () => {
+    if (searchText.trim()) {
+      fetchData(searchText.trim().toLowerCase());
+    }
+  };
 
-    fetchData();
-  }, []);
+  const handleClear = () => {
+    setSearchText('');
+    setFilteredData([]);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
-          source={require('@/assets/images/starwars.png')} 
+          source={require('@/assets/images/starwars.png')}
           style={styles.bannerImage}
           resizeMode="cover"
         />
@@ -43,31 +65,43 @@ const HomeScreen = () => {
 
       <TextInput
         style={styles.searchBar}
-        placeholder="Search Website"
-        onChangeText={handleSearch}
+        placeholder="Search SWAPI"
+        onChangeText={setSearchText}
         value={searchText}
         clearButtonMode="while-editing"
       />
 
+      <View style={styles.buttonContainer}>
+        <Button title="Search" onPress={handleSearch} />
+        <Button title="Clear" onPress={handleClear} />
+      </View>
+
       <FlatList
-      
         data={filteredData}
         renderItem={({ item }) => (
           <View style={styles.listItem}>
-            <Text style={styles.listItemTitle}>{item.name}</Text>
-            {/* Add more details as needed */}
+            <Text style={styles.listItemTitle}>{item.name || item.title}</Text>
           </View>
         )}
         keyExtractor={(item) => item.url}
         style={styles.list}
       />
+
+      <Animated.Image
+        source={require('@/assets/images/rocket.png')}
+        style={[styles.rocket, animatedStyles]}
+        resizeMode="contain"
+      />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
   },
   imageContainer: {
     width: '100%',
@@ -82,6 +116,11 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 10,
     padding: 10,
+    margin: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     margin: 10,
   },
   list: {
@@ -111,6 +150,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
+  rocket: {
+    height: 100,
+    width: 100,
+  },
 });
-
-export default HomeScreen;

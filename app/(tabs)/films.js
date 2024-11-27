@@ -25,7 +25,7 @@ const FilmsScreen = () => {
       {/* Image container */}
       <View style={styles.imageContainer}>
         <Image
-          source={require('@/assets/images/films.png')} // Replace with your image path
+          source={require('@/assets/images/films.png')} 
           style={styles.bannerImage}
           resizeMode="cover"
         />
