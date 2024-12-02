@@ -1,40 +1,46 @@
-
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TextInput, Button, FlatList, Text, Image } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withRepeat,
-} from 'react-native-reanimated';
-import axios from 'axios';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withRepeat } from 'react-native-reanimated';
+import   
+ axios from 'axios';
+import NetInfo from '@react-native-community/netinfo';
 
 export default function App({ width }) {
   const offset = useSharedValue(width / 2 - 160);
-
+  const [searchText, setSearchText] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);   
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateX: offset.value }],
   }));
 
-  React.useEffect(() => {
-    offset.value = withRepeat(
-      withTiming(-offset.value, { duration: 2000 }),
-      -1,
-      true
-    );
+  const [error, setError] = useState(null);   
+
+  const [isConnected, setIsConnected] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+    });
+
+    return () => unsubscribe();   
+
   }, []);
-
-  const [searchText, setSearchText] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-  const [data, setData] = useState([]);
-
-  const fetchData = async (query) => {
-    try {
-      const response = await axios.get(`https://swapi.dev/api/${query}/`);
-      setData(response.data.results);
-      setFilteredData(response.data.results);
-    } catch (error) {
-      console.error('Error fetching data:', error);
+     
+  const   
+  fetchData = async (query) => {
+     setIsLoading(true);
+     setError(null);
+      if (isConnected)  {
+      try {
+        const response = await axios.get(`https://swapi.dev/api/${query}/`);
+        setData(response.data.results);
+        setFilteredData(response.data.results);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    } else {
+      console.warn("NO INTERNET CONNECTION, data not fetched.");
     }
   };
 
@@ -49,8 +55,13 @@ export default function App({ width }) {
     setFilteredData([]);
   };
 
+ 
+
+
+
   return (
     <View style={styles.container}>
+       { !isConnected && <Text style={styles.networkWarning}>No internet connection.</Text> }
       <View style={styles.imageContainer}>
         <Image
           source={require('@/assets/images/starwars.png')}
